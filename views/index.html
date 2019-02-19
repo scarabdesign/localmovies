@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Movies</title>
+		{{> header}}
+		<script>
+			var auth = new Auth("movies", "Movies", "movies", "{{un}}");
+			{{^showList}}
+			$(document).on("ready", function(){
+				auth.init();
+			});
+			{{/showList}}
+		</script>
+		{{#showList}}
+			<link rel="stylesheet" type="text/css" href="/public/movies/movies.css?{{ts}}" />
+			<link rel="stylesheet" type="text/css" href="/public/movies/video-js.min.css" />
+			{{#jsFiles}}
+				<script src="/public/movies/{{file}}?{{hash}}"></script>
+			{{/jsFiles}}
+			<script>
+				var agent = {{&agent}};
+				var storageAge = {{^storageAge}}0{{/storageAge}}{{#storageAge}}{{storageAge}}{{/storageAge}};
+				var list;
+				$(document).on("ready", function(){
+					list = new MovieList("{{un}}", "movies", {{&movies}}{{^movies}}{}{{/movies}});
+				})
+				
+				$(window).on("beforeunload", function(){
+					list &&	list.saveRemoteSettings();
+				});
+			</script>
+			<style>
+				.curtains { background: {{curtains}} }
+			</style>
+		{{/showList}}
+	</head>
+	<body>
+		{{#showForm}}
+			{{> loginform}}
+		{{/showForm}}
+		
+		{{#showList}}
+			<div class="curtains player_panel_container">
+				<div class="player_panel"></div>
+			</div>
+			<div class="media_list curtains"></div>
+		{{/showList}}
+	</body>
+</html>
